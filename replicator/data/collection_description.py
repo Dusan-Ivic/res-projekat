@@ -1,4 +1,4 @@
-from data.historical_collection import HistoricalCollection
+from .historical_collection import HistoricalCollection
 
 class CollectionDescription:
     def __init__(self, id, dataset):
