@@ -7,6 +7,7 @@ PORT = 65432
 class ReplicatorSender:
     def __init__(self):
         self.sender_to_writer_socket = socket.socket()
+        self.sender_to_receiver_socket = socket.socket()
     
     def initialize_socket(self):
         try:
