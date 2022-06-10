@@ -15,7 +15,18 @@ class ReplicatorSender:
             print(str(e))
             return False
         return True
-  
+    
+    def connect_to_receiver(self):
+        try:
+            self.sender_to_receiver_socket.connect((HOST, 65433))
+        except socket.error as e:
+            print(str(e))
+            return False
+        return True
+
+    def send_data_to_receiver(self, data):
+        self.sender_to_receiver_socket.send(data)
+
     def threaded_writer(self, connection, address):
         while True:
             try:
@@ -28,7 +39,7 @@ class ReplicatorSender:
                 code = data.decode("utf-8").split(",")[0]
                 value = data.decode("utf-8").split(",")[1]
                 print(f"[{address[0]}:{address[1]}] CODE: {code}; VALUE: {value}")
-                #TO DO: Send data to reciever.
+                self.send_data_to_receiver(data)
         connection.close()
 
     def start_listening(self):
@@ -42,4 +53,5 @@ class ReplicatorSender:
 if __name__ == "__main__":
     replicator_sender = ReplicatorSender()
     if replicator_sender.initialize_socket():
-        replicator_sender.start_listening()
+        if replicator_sender.connect_to_receiver():
+            replicator_sender.start_listening()
