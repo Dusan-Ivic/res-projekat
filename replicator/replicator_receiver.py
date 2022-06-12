@@ -8,7 +8,10 @@ PORT = 65433
 class ReplicatorReceiver:
     def __init__(self):
         self.receiver_to_sender_socket = socket.socket()
+        self.receiver_to_reader_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.collection_descriptions = {}
+        self.collection_description_add = []
+        self.collection_description_update = []
 
     def bind_socket(self):
         try:
@@ -32,33 +35,40 @@ class ReplicatorReceiver:
         print("Waiting for connections...")
         self.receiver_to_sender_socket.listen()
         connection, address = self.receiver_to_sender_socket.accept()
-        with connection:
-            print(f"Sender connected from: {address[0]}:{address[0]}")
-            while True:
-                try:
-                    data = connection.recv(1024)
-                except ConnectionResetError:
-                    break
+        print(f"Sender connected from: {address[0]}:{address[1]}")
+        while True:
+            try:
+                data = connection.recv(1024)
+            except ConnectionResetError:
+                break
+            if not data:
+                break
+            else:
+                code = data.decode().split(",")[0]
+                value = data.decode().split(",")[1]
+                dataset = self.get_dataset(code)
+                id = random.randint(0, 100)
+                receiver_property = ReceiverProperty(code, value)
 
-                if not data:
-                    break
+                if id in self.collection_descriptions:
+                    self.collection_descriptions[id].historical_collection.receiver_properties.append(receiver_property)
+                    print("UPDATE")
+                    self.collection_description_update.append(self.collection_descriptions[id])
                 else:
-                    code = data.decode().split(",")[0]
-                    value = data.decode().split(",")[1]
-                    dataset = self.get_dataset(code)
-                    id = random.randint(0, 100)
-                    receiver_property = ReceiverProperty(code, value)
+                    collection_description = CollectionDescription(id, dataset)
+                    collection_description.historical_collection.receiver_properties.append(receiver_property)
+                    self.collection_descriptions[id] = collection_description
+                    print("ADD")
+                    self.collection_description_add.append(collection_description)
 
-                    if id in self.collection_descriptions:
-                        self.collection_descriptions[id].historical_collection.receiver_properties.append(receiver_property)
-                    else:
-                        collection_description = CollectionDescription(id, dataset)
-                        collection_description.historical_collection.receiver_properties.append(receiver_property)
-                        self.collection_descriptions[id] = collection_description
-
-                    # TODO - Uspostavljanje komunikacije sa Reader komponentom
-
-            connection.close()
+                if len(self.collection_description_add) + len(self.collection_description_update) == 10:
+                    # TODO - Slanje svih podataka iz Delte umesto samo jednog
+                    data = f"{id},{code},{value}"
+                    self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + dataset))
+                    self.collection_description_add = []
+                    self.collection_description_update = []
+                    
+        connection.close()
 
 
 if __name__ == "__main__":
