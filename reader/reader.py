@@ -1,4 +1,5 @@
 import socket
+from database_handler import DatabaseHandler
 
 HOST = "127.0.0.1"
 STARTING_PORT = 65434
@@ -17,6 +18,15 @@ class Reader:
             return False
         return True
 
+    def process_received_data(self, id, code, value):
+        database = DatabaseHandler(self.dataset)
+        if database.connect_to_database():
+            database.create_table_if_not_exists()
+            if database.entity_exists(id):
+                database.update_entity(id, code, value)
+            else:
+                database.insert_entity(id, code, value)
+
     def start_receiving_data(self):
         print("Waiting for connections...")
         while True:
@@ -31,8 +41,8 @@ class Reader:
                 id = data.decode().split(",")[0]
                 code = data.decode().split(",")[1]
                 value = data.decode().split(",")[2]
-                print(data.decode())
-                # TODO - Procesiranje primljenih podataka (na bazu podataka)
+                print(f"{id},{code},{value}")
+                self.process_received_data(int(id), code, int(value))
 
         self.reader_to_receiver_socket.close()
 
