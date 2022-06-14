@@ -18,14 +18,24 @@ class Reader:
             return False
         return True
 
-    def process_received_data(self, id, code, value):
+    def calculate_deadband(self, current_value, new_value):
+        deadband = abs(new_value - current_value) / current_value * 100
+        return deadband
+
+    def process_received_data(self, id, new_code, new_value):
         database = DatabaseHandler(self.dataset)
         if database.connect_to_database():
             database.create_table_if_not_exists()
             if database.entity_exists(id):
-                database.update_entity(id, code, value)
+                if new_code == "CODE_DIGITAL":
+                    database.update_entity(id, new_code, new_value)
+                else:
+                    current_value = database.get_entity_value(id)
+                    deadband = self.calculate_deadband(current_value, new_value)
+                    if deadband >= 2:
+                        database.update_entity(id, new_code, new_value)
             else:
-                database.insert_entity(id, code, value)
+                database.insert_entity(id, new_code, new_value)
 
     def start_receiving_data(self):
         print("Waiting for connections...")

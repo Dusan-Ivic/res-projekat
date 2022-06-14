@@ -34,6 +34,15 @@ class DatabaseHandler:
             """)
         return results.fetchall()[0]
 
+    def get_entity_value(self, id):
+        results = self.connection.execute(f"""
+            SELECT value
+            FROM data
+            WHERE id = {id}
+            """)
+        value, = results.fetchall()[0]
+        return value
+
     def get_all_entities(self):
         results = self.connection.execute(f"""
             SELECT id, code, value, timestamp
