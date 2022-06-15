@@ -63,7 +63,6 @@ class Reader:
             try:
                 data, address = self.reader_to_receiver_socket.recvfrom(1024)
                 print(f"Data received  from: {address[0]}:{address[1]}")
-                #self.reader_to_logger_socket.send(data)
             except ConnectionResetError:
                 break
             if not data:
