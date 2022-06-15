@@ -1,13 +1,16 @@
 import socket
 from _thread import *
+from datetime import datetime
 
 HOST = "127.0.0.1"
 PORT = 65432
+LOG_PORT = 65430
 
 class ReplicatorSender:
     def __init__(self):
         self.sender_to_writer_socket = socket.socket()
         self.sender_to_receiver_socket = socket.socket()
+        self.sender_to_logger_socket = socket.socket()
     
     def initialize_socket(self):
         try:
@@ -25,8 +28,18 @@ class ReplicatorSender:
             return False
         return True
 
+    def connect_to_logger(self):
+        try:
+            self.sender_to_logger_socket.connect((HOST, LOG_PORT))
+        except socket.error as e:
+            print(str(e))
+            return False
+        return True
+
     def send_data_to_receiver(self, data):
         self.sender_to_receiver_socket.send(data)
+        data_log = f"[SENDER] {datetime.now()} {data}"
+        self.sender_to_logger_socket.send(data_log.encode()) #moze lepse da se formatira ova funkcija
 
     def threaded_writer(self, connection, address):
         while True:
@@ -55,4 +68,5 @@ if __name__ == "__main__":
     replicator_sender = ReplicatorSender()
     if replicator_sender.initialize_socket():
         if replicator_sender.connect_to_receiver():
-            replicator_sender.start_listening()
+            if replicator_sender.connect_to_logger():
+                replicator_sender.start_listening()

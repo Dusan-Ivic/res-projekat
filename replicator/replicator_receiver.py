@@ -1,3 +1,4 @@
+from datetime import datetime
 import socket, random
 from data.receiver_property import ReceiverProperty
 from data.collection_description import CollectionDescription
@@ -5,10 +6,12 @@ from data.delta_cd import DeltaCD
 
 HOST = "127.0.0.1"
 PORT = 65433
+LOG_PORT = 65430
 
 class ReplicatorReceiver:
     def __init__(self):
         self.receiver_to_sender_socket = socket.socket()
+        self.receiver_to_logger_socker = socket.socket()
         self.receiver_to_reader_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.collection_descriptions = {}
         self.delta = DeltaCD()
@@ -16,6 +19,14 @@ class ReplicatorReceiver:
     def bind_socket(self):
         try:
             self.receiver_to_sender_socket.bind((HOST, PORT))
+        except socket.error as e:
+            print(str(e))
+            return False
+        return True
+
+    def connect_to_logger(self):
+        try:
+            self.receiver_to_logger_socker.connect((HOST, LOG_PORT))
         except socket.error as e:
             print(str(e))
             return False
@@ -39,11 +50,15 @@ class ReplicatorReceiver:
             for cd in self.delta.add:
                 for prop in cd.historical_collection.receiver_properties:
                     data = f"{cd.id},{prop.code},{prop.value}"
+                    data_log = f"[RECEIVERADD] {datetime.now()} {data}"
                     self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + cd.dataset))
+                    self.receiver_to_logger_socker.send(data_log.encode())
             for cd in self.delta.update:
                 for prop in cd.historical_collection.receiver_properties:
                     data = f"{cd.id},{prop.code},{prop.value}"
+                    data_log = f"[RECEIVERUPDATE] {datetime.now()} {data}"
                     self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + cd.dataset))
+                    self.receiver_to_logger_socker.send(data_log.encode())
             self.delta.clear()
         elif id in self.collection_descriptions:
             print("UPDATE")
@@ -82,4 +97,5 @@ class ReplicatorReceiver:
 if __name__ == "__main__":
     replicator_receiver = ReplicatorReceiver()
     if replicator_receiver.bind_socket():
-        replicator_receiver.start_listening()
+         if replicator_receiver.connect_to_logger():
+            replicator_receiver.start_listening()
