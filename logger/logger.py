@@ -1,19 +1,11 @@
 import socket
 from _thread import *
-import queue
-import random
-import time
 import threading
-
 
 HOST = "127.0.0.1"
 PORT = 65430
 
-
-class Logger:
-
-    
-    
+class Logger:   
     def __init__(self):
         self.logger_socket = socket.socket()
 
@@ -24,10 +16,7 @@ class Logger:
             print(str(e))
             return False
         return True
-    
-   
-    
-    
+              
     def threaded_capture(self, connection, address):
         global_lock = threading.Lock()
         while True:
@@ -52,8 +41,6 @@ class Logger:
                     
                 global_lock.release()
         connection.close()
-
-
 
     def start_listening(self):
         print("Logger is active and waiting for connections.")
