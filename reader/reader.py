@@ -1,18 +1,29 @@
+from datetime import datetime
 import socket
 from database_handler import DatabaseHandler
 
 HOST = "127.0.0.1"
 STARTING_PORT = 65434
+LOG_PORT = 65430
 
 class Reader:
     def __init__(self, dataset, port):
         self.dataset = dataset
         self.port = port
         self.reader_to_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.reader_to_logger_socket = socket.socket()
 
     def bind_socket(self):
         try:
             self.reader_to_receiver_socket.bind((HOST, self.port))
+        except socket.error as e:
+            print(str(e))
+            return False
+        return True
+
+    def connect_to_logger(self):
+        try:
+           self.reader_to_logger_socket.connect((HOST, LOG_PORT))
         except socket.error as e:
             print(str(e))
             return False
@@ -29,13 +40,22 @@ class Reader:
             if database.entity_exists(id):
                 if new_code == "CODE_DIGITAL":
                     database.update_entity(id, new_code, new_value)
+                    data = f"{id},{new_code},{new_value}"
+                    data_log = f"[READER] {datetime.now()} {data}"
+                    self.reader_to_logger_socket.send(data_log.encode())
                 else:
                     current_value = database.get_entity_value(id)
                     deadband = self.calculate_deadband(current_value, new_value)
                     if deadband >= 2:
                         database.update_entity(id, new_code, new_value)
+                        data = f"{id},{new_code},{new_value}"
+                        data_log = f"[READER] {datetime.now()} {data}"
+                        self.reader_to_logger_socket.send(data_log.encode())
             else:
                 database.insert_entity(id, new_code, new_value)
+                data = f"{id},{new_code},{new_value}"
+                data_log = f"[READER] {datetime.now()} {data}"
+                self.reader_to_logger_socket.send(data_log.encode())
 
     def start_receiving_data(self):
         print("Waiting for connections...")
@@ -43,6 +63,7 @@ class Reader:
             try:
                 data, address = self.reader_to_receiver_socket.recvfrom(1024)
                 print(f"Data received  from: {address[0]}:{address[1]}")
+                #self.reader_to_logger_socket.send(data)
             except ConnectionResetError:
                 break
             if not data:

@@ -4,4 +4,5 @@ if __name__ == "__main__":
     print("READER #1")
     reader = Reader(1, 65434)
     if reader.bind_socket():
-        reader.start_receiving_data()
+        if reader.connect_to_logger():
+            reader.start_receiving_data()

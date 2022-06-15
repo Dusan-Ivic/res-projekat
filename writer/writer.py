@@ -1,8 +1,10 @@
 import socket, random
 from time import sleep
+from datetime import datetime
 
 HOST = "127.0.0.1"
 PORT = 65432
+LOG_PORT = 65430
 
 CODE_LIST = [
     "CODE_ANALOG",
@@ -18,6 +20,7 @@ CODE_LIST = [
 class Writer:
     def __init__(self):
         self.client_socket = socket.socket()
+        self.client_log = socket.socket()
 
     def connect_to_server(self):
         try:
@@ -26,9 +29,18 @@ class Writer:
             print(str(e))
             return False
         return True
+
+    def connect_to_logger(self):
+        try:
+            self.client_log.connect((HOST, LOG_PORT))
+        except socket.error as e:
+            print(str(e))
+            return False
+        return True
     
     def get_code(self, index):
         return CODE_LIST[index]
+    
   
     def send_data(self):
         while True:
@@ -36,10 +48,13 @@ class Writer:
             index = random.randint(0, 7)
             code = self.get_code(index)
             str = f"{code},{value}"
+            str_log = f"[WRITER] {datetime.now()} {str}"
             self.client_socket.send(str.encode())
+            self.client_log.send(str_log.encode())
             sleep(2)
 
 if __name__ == "__main__":
     writer = Writer()
     if writer.connect_to_server():
-        writer.send_data()
+        if writer.connect_to_logger():
+            writer.send_data()
