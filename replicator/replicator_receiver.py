@@ -7,6 +7,7 @@ from data.delta_cd import DeltaCD
 HOST = "127.0.0.1"
 PORT = 65433
 LOG_PORT = 65430
+NEW_LINE = '\n'
 
 class ReplicatorReceiver:
     def __init__(self):
@@ -42,6 +43,28 @@ class ReplicatorReceiver:
         if code in ["CODE_CONSUMER", "CODE_SOURCE"]:
             return 4
 
+<<<<<<< Updated upstream:replicator/replicator_receiver.py
+=======
+    def send_delta_to_reader(self):
+        for id in self.delta.add:
+            for prop in self.delta.add[id].historical_collection.receiver_properties:
+                data = f"{id},{prop.code},{prop.value}"
+                print(data)
+                self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.add[id].dataset))
+                log_data = f"[RECEIVER - DELTA ADD] {datetime.now()},{data}{NEW_LINE}"
+                self.receiver_to_logger_socket.send(log_data.encode())
+
+        for id in self.delta.update:
+            for prop in self.delta.update[id].historical_collection.receiver_properties:
+                data = f"{id},{prop.code},{prop.value}"
+                print(data)
+                self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.update[id].dataset))
+                log_data = f"[RECEIVER - DELTA UPDATE] {datetime.now()},{data}{NEW_LINE}"
+                self.receiver_to_logger_socket.send(log_data.encode())
+
+        self.delta.clear()
+
+>>>>>>> Stashed changes:receiver/replicator_receiver.py
     def process_received_data(self, code, value, dataset, id):
         receiver_property = ReceiverProperty(code, value)
 
