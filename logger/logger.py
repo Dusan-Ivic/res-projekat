@@ -39,7 +39,7 @@ class Logger:
                 break
             else:
                 data_decoded = data.decode("utf-8")
-                print(f"{data_decoded} - Source: {address[0]}:{address[1]}")
+                print(f"Source: {address[0]}:{address[1]} {data_decoded}")
                 while global_lock.locked():
                     continue
 
@@ -47,7 +47,6 @@ class Logger:
 
                 with open("logger.txt", "a+") as file:
                     file.write(data_decoded)
-                    file.write("\n")
                     file.close()
                     
                 global_lock.release()
@@ -62,7 +61,7 @@ class Logger:
         while True:
             connection, address = self.logger_socket.accept()
             start_new_thread(self.threaded_capture, (connection, address))
-            print(f"New connection: {address[0]}:{address[1]}")
+            print(f"New connection: {address[0]}:{address[1]} \n")
 
 if __name__ == "__main__":
     logger = Logger()
