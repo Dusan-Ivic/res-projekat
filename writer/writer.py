@@ -5,6 +5,7 @@ from datetime import datetime
 HOST = "127.0.0.1"
 PORT = 65432
 LOG_PORT = 65430
+NEW_LINE = '\n'
 
 CODE_LIST = [
     "CODE_ANALOG",
@@ -48,7 +49,7 @@ class Writer:
             index = random.randint(0, 7)
             code = self.get_code(index)
             str = f"{code},{value}"
-            str_log = f"[WRITER] {datetime.now()} {str}"
+            str_log = f"[WRITER] {datetime.now()} {str}{NEW_LINE}"
             self.client_socket.send(str.encode())
             self.client_log.send(str_log.encode())
             sleep(2)
