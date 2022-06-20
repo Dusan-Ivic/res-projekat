@@ -5,6 +5,7 @@ from database_handler import DatabaseHandler
 HOST = "127.0.0.1"
 STARTING_PORT = 65434
 LOG_PORT = 65430
+NEW_LINE = '\n'
 
 class Reader:
     def __init__(self, dataset, port):
@@ -41,7 +42,7 @@ class Reader:
                 if new_code == "CODE_DIGITAL":
                     database.update_entity(id, new_code, new_value)
                     data = f"{id},{new_code},{new_value}"
-                    data_log = f"[READER] {datetime.now()} {data}"
+                    data_log = f"[READER] {datetime.now()} {data}{NEW_LINE}"
                     self.reader_to_logger_socket.send(data_log.encode())
                 else:
                     current_value = database.get_entity_value(id)
@@ -49,12 +50,12 @@ class Reader:
                     if deadband >= 2:
                         database.update_entity(id, new_code, new_value)
                         data = f"{id},{new_code},{new_value}"
-                        data_log = f"[READER] {datetime.now()} {data}"
+                        data_log = f"[READER] {datetime.now()} {data}{NEW_LINE}"
                         self.reader_to_logger_socket.send(data_log.encode())
             else:
                 database.insert_entity(id, new_code, new_value)
                 data = f"{id},{new_code},{new_value}"
-                data_log = f"[READER] {datetime.now()} {data}"
+                data_log = f"[READER] {datetime.now()} {data}{NEW_LINE}"
                 self.reader_to_logger_socket.send(data_log.encode())
 
     def start_receiving_data(self):
