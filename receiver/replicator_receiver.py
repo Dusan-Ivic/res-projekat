@@ -7,6 +7,7 @@ from data.delta_cd import DeltaCD
 HOST = "127.0.0.1"
 PORT = 65433
 LOG_PORT = 65430
+NEW_LINE = '\n'
 
 class ReplicatorReceiver:
     def __init__(self):
@@ -48,7 +49,7 @@ class ReplicatorReceiver:
                 data = f"{id},{prop.code},{prop.value}"
                 print(data)
                 self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.add[id].dataset))
-                log_data = f"[RECEIVER - DELTA ADD],{data},{datetime.now()}"
+                log_data = f"[RECEIVER - DELTA ADD] {datetime.now()},{data}{NEW_LINE}"
                 self.receiver_to_logger_socket.send(log_data.encode())
 
         for id in self.delta.update:
@@ -56,6 +57,7 @@ class ReplicatorReceiver:
                 data = f"{id},{prop.code},{prop.value}"
                 print(data)
                 self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.update[id].dataset))
+                log_data = f"[RECEIVER - DELTA UPDATE] {datetime.now()},{data}{NEW_LINE}"
                 log_data = f"[RECEIVER - DELTA UPDATE],{data},{datetime.now()}"
                 self.receiver_to_logger_socket.send(log_data.encode())
 

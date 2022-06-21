@@ -5,6 +5,8 @@ from datetime import datetime
 HOST = "127.0.0.1"
 PORT = 65432
 LOG_PORT = 65430
+NEW_LINE = '\n'
+
 
 class ReplicatorSender:
     def __init__(self):
@@ -37,9 +39,10 @@ class ReplicatorSender:
         return True
 
     def send_data_to_receiver(self, data):
+        decoded = data.decode()
+        data_log = f"[SENDER] {datetime.now()} {decoded}{NEW_LINE}"
         self.sender_to_receiver_socket.send(data)
-        data_log = f"[SENDER] {datetime.now()} {data}"
-        self.sender_to_logger_socket.send(data_log.encode()) #moze lepse da se formatira ova funkcija
+        self.sender_to_logger_socket.send(data_log.encode())
 
     def threaded_writer(self, connection, address):
         while True:
