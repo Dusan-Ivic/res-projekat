@@ -58,6 +58,7 @@ class ReplicatorReceiver:
                 print(data)
                 self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.update[id].dataset))
                 log_data = f"[RECEIVER - DELTA UPDATE] {datetime.now()},{data}{NEW_LINE}"
+                log_data = f"[RECEIVER - DELTA UPDATE],{data},{datetime.now()}"
                 self.receiver_to_logger_socket.send(log_data.encode())
 
         self.delta.clear()
