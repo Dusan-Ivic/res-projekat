@@ -43,7 +43,6 @@ class ReplicatorSender:
         self.sender_to_receiver_socket.send(data)
         self.sender_to_logger_socket.send(data_log.encode())
         
-
     def threaded_writer(self, connection, address):
         while True:
             try:
