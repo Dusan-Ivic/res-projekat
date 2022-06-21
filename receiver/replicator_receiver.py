@@ -58,7 +58,6 @@ class ReplicatorReceiver:
                 print(data)
                 self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.update[id].dataset))
                 log_data = f"[RECEIVER - DELTA UPDATE] {datetime.now()},{data}{NEW_LINE}"
-                log_data = f"[RECEIVER - DELTA UPDATE],{data},{datetime.now()}"
                 self.receiver_to_logger_socket.send(log_data.encode())
 
         self.delta.clear()
@@ -73,8 +72,6 @@ class ReplicatorReceiver:
         if id in self.collection_descriptions:
             print("Update")
             self.collection_descriptions[id].historical_collection.receiver_properties.append(receiver_property)
-            collection_description = CollectionDescription(id, dataset)
-            collection_description.historical_collection.receiver_properties.append(receiver_property)
             if id in self.delta.update:
                 self.delta.update[id].historical_collection.receiver_properties.append(receiver_property)
             else:
