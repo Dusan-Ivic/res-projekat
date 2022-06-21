@@ -17,7 +17,6 @@ CODE_LIST = [
     "CODE_CONSUMER",
     "CODE_SOURCE"]
 
-
 class Writer:
     def __init__(self):
         self.client_socket = socket.socket()
