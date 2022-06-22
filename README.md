@@ -21,7 +21,7 @@ Writer predstavlja ulaznu tačku implementiranog sistema. Korisniku je pomoću W
 
 ## Sender
 
-Replicator Sender komponenta je odredište na koje sve postojeći Writeri šalju svoje pakete. Nakon primanja jednog takvog paketa Sender će ga sačuvati u sopstveni buffer. Ako je upostavljen konekcija sa Replicator Receiver komponentom podaci iz buffer-a će biti prosleđeni na dalju obradu.
+Replicator Sender komponenta je odredište na koje svi postojeći Writeri šalju svoje pakete. Nakon primanja jednog takvog paketa Sender će ga sačuvati u sopstveni buffer. Ako je upostavljena konekcija sa Replicator Receiver komponentom podaci iz buffer-a će biti prosleđeni na dalju obradu.
 
 ---
 
@@ -33,7 +33,7 @@ Replicator Receiver implementira glavnu logiku zadatka. Nakon primanja celobrojn
 
 ## Reader
 
-Reader je komponenta koja preko DatabaseHandler klase upravlja bazom podataka. Postoje ukupno 4 instance Readera koje rade sa specifičnim Datasetom, označenim vrednošću od 1 do 4, te postoje i četiri datoteke koje predstavljaju bazu podataka. Paketi koji su pristigli iz Receivera se raspakuju, a iz baze podataka se zahteva entiet sa prosleđenim ID-em. Ukoliko takav entitet postoji i samo ukoliko su uslovi za upis ispunjeni (kod je jednak "CODE_DIGITAL" ili se nova vrednost razlikuje za više od 2% od postojeće) entitet iz baze će biti prepisan novim vrednostima. U slučaju da entitet sa ID-em ne postoji u bazi on će biti upisan bez proveravanja navedenih uslova. 
+Reader je komponenta koja preko DatabaseHandler klase upravlja bazom podataka. Postoje ukupno 4 instance Readera koje rade sa specifičnim Datasetom, označenim vrednošću od 1 do 4, te postoje i četiri datoteke koje predstavljaju baze podataka. Paketi koji su pristigli iz Receivera se raspakuju, a iz baze podataka se zahteva entitet sa prosleđenim ID-em. Ukoliko takav entitet postoji i samo ukoliko su uslovi za upis ispunjeni (kod je jednak "CODE_DIGITAL" ili se nova vrednost razlikuje za više od 2% od postojeće) entitet iz baze će biti prepisan novim vrednostima. U slučaju da entitet sa ID-em ne postoji u bazi on će biti upisan bez proveravanja navedenih uslova. 
 
 ---
 
