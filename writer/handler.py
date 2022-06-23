@@ -11,7 +11,7 @@ list_of_writers = []
 
 def check_input_data(input_value):
     input_value_formated = input_value.lower()
-    if(input_value_formated != 'open' and input_value_formated != 'close' and input_value_formated != 'chose'):
+    if(input_value_formated != 'open' and input_value_formated != 'close' and input_value_formated != 'choose'):
         raise TypeError("Input not supported")
     return input_value_formated
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":  # pragma: no cover
     while True: 
         print("Open Writer                    - Input= open")
         print("Close last open Writer         - Input= close")
-        print("Chose which Writer to close    - Input= chose")
+        print("Choose which Writer to close    - Input= choose")
 
         user_choice = (input("Input = ")) 
         print("\n")
@@ -55,7 +55,7 @@ if __name__ == "__main__":  # pragma: no cover
             except:
                 print("ERR Writer failed to close.")
 
-        elif(user_choice.lower() == 'chose'):
+        elif(user_choice.lower() == 'choose'):
             print("ACTIVE WRITERS")
             print("--------------")
 
