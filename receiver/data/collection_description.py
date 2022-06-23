@@ -1,6 +1,6 @@
 from .historical_collection import HistoricalCollection
 
-class CollectionDescription:
+class CollectionDescription:  # pragma: no cover
     def __init__(self, id, dataset):
         self.id = id
         self.dataset = dataset

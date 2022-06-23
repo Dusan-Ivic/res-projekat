@@ -17,12 +17,12 @@ CODE_LIST = [
     "CODE_CONSUMER",
     "CODE_SOURCE"]
 
-class Writer:
-    def __init__(self):
+class Writer():
+    def __init__(self):  # pragma: no cover
         self.client_socket = socket.socket()
         self.client_log = socket.socket()
 
-    def connect_to_server(self):
+    def connect_to_server(self):  # pragma: no cover
         try:
             self.client_socket.connect((HOST, PORT))
         except socket.error as e:
@@ -30,7 +30,7 @@ class Writer:
             return False
         return True
 
-    def connect_to_logger(self):
+    def connect_to_logger(self):  # pragma: no cover
         try:
             self.client_log.connect((HOST, LOG_PORT))
         except socket.error as e:
@@ -39,10 +39,11 @@ class Writer:
         return True
     
     def get_code(self, index):
+        if index < 0 or index > 7:
+            raise Exception("Index out of bounds")
         return CODE_LIST[index]
-    
-  
-    def send_data(self):
+
+    def send_data(self):  # pragma: no cover
         while True:
             value = random.randint(0, 9)
             index = random.randint(0, 7)
@@ -53,7 +54,7 @@ class Writer:
             self.client_log.send(str_log.encode())
             sleep(2)
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     writer = Writer()
     if writer.connect_to_server():
         if writer.connect_to_logger():

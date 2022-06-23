@@ -10,14 +10,14 @@ LOG_PORT = 65430
 NEW_LINE = '\n'
 
 class ReplicatorReceiver:
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         self.receiver_to_sender_socket = socket.socket()
         self.receiver_to_logger_socket = socket.socket()
         self.receiver_to_reader_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.collection_descriptions = {}
         self.delta = DeltaCD()
 
-    def bind_socket(self):
+    def bind_socket(self):  # pragma: no cover
         try:
             self.receiver_to_sender_socket.bind((HOST, PORT))
         except socket.error as e:
@@ -25,7 +25,7 @@ class ReplicatorReceiver:
             return False
         return True
 
-    def connect_to_logger(self):
+    def connect_to_logger(self):  # pragma: no cover
         try:
             self.receiver_to_logger_socket.connect((HOST, LOG_PORT))
         except socket.error as e:
@@ -42,8 +42,10 @@ class ReplicatorReceiver:
             return 3
         if code in ["CODE_CONSUMER", "CODE_SOURCE"]:
             return 4
+        else:
+            raise TypeError("Code not found")
 
-    def send_delta_to_reader(self):
+    def send_delta_to_reader(self):  # pragma: no cover
         for id in self.delta.add:
             for prop in self.delta.add[id].historical_collection.receiver_properties:
                 data = f"{id},{prop.code},{prop.value}"
@@ -62,7 +64,7 @@ class ReplicatorReceiver:
 
         self.delta.clear()
 
-    def process_received_data(self, code, value, dataset, id):
+    def process_received_data(self, code, value, dataset, id):  # pragma: no cover
         receiver_property = ReceiverProperty(code, value)
 
         if self.delta.ready_to_process():
@@ -72,6 +74,8 @@ class ReplicatorReceiver:
         if id in self.collection_descriptions:
             print("Update")
             self.collection_descriptions[id].historical_collection.receiver_properties.append(receiver_property)
+            collection_description = CollectionDescription(id, dataset)
+            collection_description.historical_collection.receiver_properties.append(receiver_property)
             if id in self.delta.update:
                 self.delta.update[id].historical_collection.receiver_properties.append(receiver_property)
             else:
@@ -90,7 +94,7 @@ class ReplicatorReceiver:
                 collection_description.historical_collection.receiver_properties.append(receiver_property)
                 self.delta.add[id] = collection_description
 
-    def start_listening(self):
+    def start_listening(self):  # pragma: no cover
         print("Waiting for connections...")
         self.receiver_to_sender_socket.listen()
         connection, address = self.receiver_to_sender_socket.accept()
@@ -111,7 +115,7 @@ class ReplicatorReceiver:
                     
         connection.close()
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     replicator_receiver = ReplicatorReceiver()
     if replicator_receiver.bind_socket():
          if replicator_receiver.connect_to_logger():
