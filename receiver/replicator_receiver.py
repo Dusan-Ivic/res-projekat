@@ -36,11 +36,11 @@ class ReplicatorReceiver:
     def get_dataset(self, code):
         if code in ["CODE_ANALOG", "CODE_DIGITAL"]:
             return 1
-        if code in ["CODE_CUSTOM", "CODE_LIMITSET"]:
+        elif code in ["CODE_CUSTOM", "CODE_LIMITSET"]:
             return 2
-        if code in ["CODE_SINGLENODE", "CODE_MULTIPLENODE"]:
+        elif code in ["CODE_SINGLENODE", "CODE_MULTIPLENODE"]:
             return 3
-        if code in ["CODE_CONSUMER", "CODE_SOURCE"]:
+        elif code in ["CODE_CONSUMER", "CODE_SOURCE"]:
             return 4
         else:
             raise TypeError("Code not found")
@@ -49,7 +49,7 @@ class ReplicatorReceiver:
         for id in self.delta.add:
             for prop in self.delta.add[id].historical_collection.receiver_properties:
                 data = f"{id},{prop.code},{prop.value}"
-                print(data)
+                print(f"\t{data}")
                 self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.add[id].dataset))
                 log_data = f"[RECEIVER - DELTA ADD] {datetime.now()},{data}{NEW_LINE}"
                 self.receiver_to_logger_socket.send(log_data.encode())
@@ -57,7 +57,7 @@ class ReplicatorReceiver:
         for id in self.delta.update:
             for prop in self.delta.update[id].historical_collection.receiver_properties:
                 data = f"{id},{prop.code},{prop.value}"
-                print(data)
+                print(f"\t{data}")
                 self.receiver_to_reader_socket.sendto(data.encode(), (HOST, PORT + self.delta.update[id].dataset))
                 log_data = f"[RECEIVER - DELTA UPDATE] {datetime.now()},{data}{NEW_LINE}"
                 self.receiver_to_logger_socket.send(log_data.encode())
@@ -68,11 +68,11 @@ class ReplicatorReceiver:
         receiver_property = ReceiverProperty(code, value)
 
         if self.delta.ready_to_process():
-            print("Sending Data from Delta to Reader...")
+            print("\nSending Data from Delta to Reader...")
             self.send_delta_to_reader()
         
         if id in self.collection_descriptions:
-            print("Update")
+            print(f"Adding ({code}, {value}) to Delta->Update")
             self.collection_descriptions[id].historical_collection.receiver_properties.append(receiver_property)
             collection_description = CollectionDescription(id, dataset)
             collection_description.historical_collection.receiver_properties.append(receiver_property)
@@ -83,7 +83,7 @@ class ReplicatorReceiver:
                 collection_description.historical_collection.receiver_properties.append(receiver_property)
                 self.delta.update[id] = collection_description
         else:
-            print("Add")
+            print(f"Adding ({code}, {value}) to Delta->Add")
             collection_description = CollectionDescription(id, dataset)
             collection_description.historical_collection.receiver_properties.append(receiver_property)
             self.collection_descriptions[id] = collection_description
@@ -98,7 +98,7 @@ class ReplicatorReceiver:
         print("Waiting for connections...")
         self.receiver_to_sender_socket.listen()
         connection, address = self.receiver_to_sender_socket.accept()
-        print(f"Sender connected from: {address[0]}:{address[1]}")
+        print(f"Sender connected from: {address[0]}:{address[1]}\n")
         while True:
             try:
                 data = connection.recv(1024)

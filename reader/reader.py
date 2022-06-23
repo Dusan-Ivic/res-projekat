@@ -1,6 +1,6 @@
 from datetime import datetime
 import socket
-from database_handler import DatabaseHandler
+from database.database_handler import DatabaseHandler
 
 HOST = "127.0.0.1"
 STARTING_PORT = 65434

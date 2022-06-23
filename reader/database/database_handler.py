@@ -72,9 +72,6 @@ class DatabaseHandler:
     def update_entity(self, id, code, value):  # pragma: no cover
         print("[DATABASE] UPDATE ENTITY")
         timestamp = datetime.now()
-        # entity = self.get_entity(id)
-        # ecode, evalue = entity
-        # TODO - Provera deadband-a
         self.connection.execute(f"""
             UPDATE data
             SET code = "{code}", value = {value}, timestamp = "{timestamp}"
