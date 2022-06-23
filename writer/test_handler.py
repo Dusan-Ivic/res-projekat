@@ -10,7 +10,7 @@ class TestHandler(unittest.TestCase):
     def test_right_input(self):
         self.assertEqual(check_input_data("open"),"open")
         self.assertEqual(check_input_data("close"),"close")
-        self.assertEqual(check_input_data("chose"),"chose")
+        self.assertEqual(check_input_data("choose"),"choose")
 
     def test_wrong_input_choice(self):
         self.assertRaises(TypeError, check_input_data_branching,-12)
