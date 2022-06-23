@@ -8,13 +8,13 @@ LOG_PORT = 65430
 NEW_LINE = '\n'
 
 class Reader:
-    def __init__(self, dataset, port):
+    def __init__(self, dataset, port):  # pragma: no cover
         self.dataset = dataset
         self.port = port
         self.reader_to_receiver_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.reader_to_logger_socket = socket.socket()
 
-    def bind_socket(self):
+    def bind_socket(self):  # pragma: no cover
         try:
             self.reader_to_receiver_socket.bind((HOST, self.port))
         except socket.error as e:
@@ -22,7 +22,7 @@ class Reader:
             return False
         return True
 
-    def connect_to_logger(self):
+    def connect_to_logger(self):  # pragma: no cover
         try:
            self.reader_to_logger_socket.connect((HOST, LOG_PORT))
         except socket.error as e:
@@ -30,11 +30,11 @@ class Reader:
             return False
         return True
 
-    def calculate_deadband(self, current_value, new_value):
+    def calculate_deadband(self, current_value, new_value): 
         deadband = abs(new_value - current_value) / current_value * 100
         return deadband
 
-    def process_received_data(self, id, new_code, new_value):
+    def process_received_data(self, id, new_code, new_value):  # pragma: no cover
         database = DatabaseHandler(self.dataset)
         if database.connect_to_database():
             database.create_table_if_not_exists()
@@ -58,7 +58,7 @@ class Reader:
                 data_log = f"[READER] {datetime.now()} {data}{NEW_LINE}"
                 self.reader_to_logger_socket.send(data_log.encode())
 
-    def start_receiving_data(self):
+    def start_receiving_data(self):  # pragma: no cover
         print("Waiting for connections...")
         while True:
             try:
@@ -77,5 +77,5 @@ class Reader:
 
         self.reader_to_receiver_socket.close()
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     pass

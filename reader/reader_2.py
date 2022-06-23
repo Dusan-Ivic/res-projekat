@@ -1,6 +1,6 @@
 from reader import Reader
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     print("READER #2")
     reader = Reader(2, 65435)
     if reader.bind_socket():

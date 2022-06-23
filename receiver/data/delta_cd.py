@@ -1,5 +1,5 @@
 
-class DeltaCD:
+class DeltaCD:  # pragma: no cover
     def __init__(self):
         self.add = {}
         self.update = {}
